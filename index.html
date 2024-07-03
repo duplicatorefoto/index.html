@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Duplicator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+        }
+        #photo-container img {
+            margin: 10px;
+            width: 150px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Photo Duplicator</h1>
+    <button id="download-btn" onclick="downloadPhotos()" style="display:none;">Download Photos</button>
+    <br>
+    <input type="file" id="photo-input" accept="image/*">
+    <br>
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity" min="1" value="1">
+    <br>
+    <button onclick="duplicatePhotos()">Duplicate Photo</button>
+    <div id="photo-container"></div>
+
+    <script>
+        function duplicatePhotos() {
+            const photoInput = document.getElementById('photo-input');
+            const quantity = document.getElementById('quantity').value;
+            const photoContainer = document.getElementById('photo-container');
+            const downloadBtn = document.getElementById('download-btn');
+
+            // Clear previous photos
+            photoContainer.innerHTML = '';
+
+            if (photoInput.files && photoInput.files[0]) {
+                const file = photoInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    for (let i = 0; i < quantity; i++) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = 'Duplicated Photo';
+
+                        // Create a download link for each image
+                        const link = document.createElement('a');
+                        link.href = e.target.result;
+                        link.download = 'duplicated_photo_' + (i + 1) + '.png';
+                        link.appendChild(img);
+
+                        photoContainer.appendChild(link);
+                    }
+
+                    // Show the download button
+                    downloadBtn.style.display = 'block';
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                alert("Please select a photo to duplicate.");
+            }
+        }
+
+        function downloadPhotos() {
+            const links = document.querySelectorAll('#photo-container a');
+            links.forEach(link => link.click());
+        }
+    </script>
+</body>
+</html>
